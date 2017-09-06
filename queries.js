@@ -1,23 +1,17 @@
 /* Fill out these functions using Mongoose queries*/
-var fs = require('fs'),
-    mongoose = require('mongoose'),
-    Schema = mongoose.Schema,
-    Listing = require('./ListingSchema.js'),
-    config = require('./config'),
-    listings = require('./listings.json');
-
-/* Connect to your database */
-    mongoose.connect(config.db.uri)
+var Listing = require('./ListingSchema.js');
+var Mongoose = require('mongoose');
 
 var findLibraryWest = function() {
   /*
     Find the document that contains data corresponding to Library West,
     then log it to the console.
    */
-   Listing.findOne({ "name": "Library West" }, 'code name address coordinates', function (err, listing) {
-    if (err) return handleError(err);
-    console.log("Listing found! " + listing); // Space Ghost is a talk show host.
-   })
+   Listing.find({ name: 'Library West'}, function(err, listing){
+    if (err) throw err;
+
+    console.log(listing);
+   });
 };
 var removeCable = function() {
   /*
@@ -25,12 +19,13 @@ var removeCable = function() {
     on cable TV. Since we live in the 21st century and most courses are now web based, go ahead
     and remove this listing from your database and log the document to the console.
    */
-   Listing.findOne({ "code": "CABL" }, 'code name address coordinates', function (err, listing) {
-    if (err) return handleError(err);
+   Listing.find({ code: 'CABL'}, function(err, listing) {
+    if (err) throw err;
+
     listing.remove(function(err) {
       if (err) throw err;
 
-      console.log('listing deleted!');
+      console.log(listing);
     });
    });
 };
@@ -39,25 +34,33 @@ var updatePhelpsLab = function() {
     Phelps Laboratory's address is incorrect. Find the listing, update it, and then
     log the updated document to the console.
    */
-   Listing.findOne({ "name": "Phelps Laboratory" }, 'code name address coordinates', function (err, listing) {
-    if (err) return handleError(err);
-    console.log(listing)
-    listing.address = "102 Phelps Lab, Gainesville, FL 32611";
+   Listing.find({ code: 'PHL'}, function(err, listing) {
+    if (err) throw err;
+
+    listing.address = '432 Newell Dr, Gainesville, FL 32611, United States';
+
     listing.save(function(err) {
       if (err) throw err;
 
-      console.log('listing updated!');
+      console.log(listing);
     });
    });
+   /*User.findOneAndUpdate({ address: '432 Newell Dr, Gainesville, FL 32611, United States' }, { address: ''},
+    function(err, listings) {
+      if (err) throw err;
+
+      console.log(user);
+    });*/
 };
 var retrieveAllListings = function() {
   /*
     Retrieve all listings in the database, and log them to the console.
    */
-   Listing.find({}, 'code name address coordinates', function (err, listing) {
-    if (err) return handleError(err);
-    console.log("Everything: " + listing); // Space Ghost is a talk show host.
-   })
+   Listing.find({}, function(err, listings) {
+    if (err) throw err;
+
+    console.log(listings);
+   });
 };
 
 findLibraryWest();
