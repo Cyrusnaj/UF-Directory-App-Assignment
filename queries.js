@@ -1,69 +1,93 @@
 /* Fill out these functions using Mongoose queries*/
-var Listing = require('./ListingSchema.js');
-var Mongoose = require('mongoose');
+
+const mongoose = require('mongoose'),
+      Schema = mongoose.Schema,
+      Listing = require('./ListingSchema.js'),
+      config = require('./config');
+
+// Connecting to the db
+
+mongoose.connect(config.db.uri);
 
 var findLibraryWest = function() {
   /*
     Find the document that contains data corresponding to Library West,
     then log it to the console.
    */
-   Listing.find({ name: 'Library West'}, function(err, listing){
-    if (err) throw err;
 
-    console.log(listing);
-   });
+  Listing.find({
+    name: 'Library West'
+  }, (err, entity) => {
+
+    if (err) {
+      throw err;
+    }
+
+    console.log(JSON.stringify(entity));
+  });
+
+
 };
 var removeCable = function() {
   /*
-    Find the document with the code 'CABL'. This cooresponds with courses that can only be viewed
+    Find the document with the code 'CABL'. This corresponds with courses that can only be viewed
     on cable TV. Since we live in the 21st century and most courses are now web based, go ahead
     and remove this listing from your database and log the document to the console.
    */
-   Listing.find({ code: 'CABL'}, function(err, listing) {
-    if (err) throw err;
 
-    listing.remove(function(err) {
-      if (err) throw err;
+  Listing.find({
+    code: 'CABL'
+  }, (err, entities) => {
+    if (err) {
+      throw err;
+    }
 
-      console.log(listing);
-    });
-   });
+    for(let i = 0; i < entities.length; i++) {
+      entities[i].remove((err) => {
+        if (err) {
+          throw err;
+        }
+
+        console.log(entities[i]);
+
+      });
+    }
+  });
+
 };
-var updatePhelpsLab = function() {
+var updatePhelpsMemorial = function() {
   /*
-    Phelps Laboratory's address is incorrect. Find the listing, update it, and then
+    Phelps Memorial Hospital Center's address is incorrect. Find the listing, update it, and then
     log the updated document to the console.
    */
-   Listing.find({ code: 'PHL'}, function(err, listing) {
-    if (err) throw err;
-
-    listing.address = '432 Newell Dr, Gainesville, FL 32611, United States';
-
+   Listing.findOne({ "name": "Phelps Laboratory" }, 'code name address coordinates', function (err, listing) {
+    if (err) return handleError(err);
+    console.log(listing)
+    listing.address = "102 Phelps Lab, Gainesville, FL 32611";
     listing.save(function(err) {
       if (err) throw err;
 
-      console.log(listing);
+      console.log('updated listing');
     });
    });
-   /*User.findOneAndUpdate({ address: '432 Newell Dr, Gainesville, FL 32611, United States' }, { address: ''},
-    function(err, listings) {
-      if (err) throw err;
-
-      console.log(user);
-    });*/
 };
 var retrieveAllListings = function() {
   /*
     Retrieve all listings in the database, and log them to the console.
    */
-   Listing.find({}, function(err, listings) {
-    if (err) throw err;
 
-    console.log(listings);
-   });
+  Listing.find({}, (err, entities) => {
+    if (err) {
+      throw err;
+    }
+
+    for (let i = 0; i < entities.length; i++) {
+      console.log(entities[i]);
+    }
+  });
 };
 
 findLibraryWest();
 removeCable();
-updatePhelpsLab();
+updatePhelpsMemorial();
 retrieveAllListings();
